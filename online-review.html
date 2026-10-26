@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小学语文自习与复习乐园</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            peach: {
+              50: '#fff8f3',
+              100: '#ffeedd',
+              200: '#ffd8b5',
+              400: '#ff9e58',
+              500: '#ff7b29',
+              600: '#e05907',
+            },
+            warm: {
+              bg: '#FFFDF9',
+              card: '#FFFFFF'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FFFDF9;
+      background-image: radial-gradient(#ffd8b5 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+    }
+
+    /* Flip Card Styles */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    .card-flip:hover .card-inner, .card-flip.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    /* Pulse animation for voice recording */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 123, 41, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(255, 123, 41, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 123, 41, 0); }
+    }
+    .recording-active {
+      animation: pulse-ring 1.5s infinite;
+      background-color: #ef4444 !important;
+      color: white !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ffeedd;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff9e58;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Header & Navigation -->
+  <header class="bg-white/90 backdrop-blur-md shadow-sm border-b border-orange-100 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-peach-500 to-amber-400 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-orange-200">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-800 tracking-wide">中文词汇与句型复习乐园</h1>
+          <p class="text-xs text-slate-500">互动自习 & 趣味测试</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex bg-orange-100/70 p-1 rounded-2xl border border-orange-200 w-full sm:w-auto">
+        <button id="tab-btn-1" onclick="switchTab(1)" class="flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 bg-white text-peach-600 shadow-sm">
+          <i class="fa-solid fa-book-open"></i> 第一页：词汇自习
+        </button>
+        <button id="tab-btn-2" onclick="switchTab(2)" class="flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-slate-600 hover:text-peach-600">
+          <i class="fa-solid fa-gamepad"></i> 第二页：小测试游戏
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- PAGE 1: 词汇自习 -->
+    <section id="page-1" class="space-y-6">
+      <!-- Welcome Banner -->
+      <div class="bg-gradient-to-r from-orange-400 via-peach-500 to-amber-400 rounded-3xl p-6 text-white shadow-xl shadow-orange-100 relative overflow-hidden">
+        <div class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
+          <i class="fa-solid fa-icons text-9xl"></i>
+        </div>
+        <div class="relative z-10 max-w-2xl">
+          <span class="inline-block bg-white/20 backdrop-blur-md text-xs px-3 py-1 rounded-full mb-2 font-medium">图一重点词汇</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">自主学习与发音练习</h2>
+          <p class="text-orange-100 text-sm sm:text-base">把鼠标移到词语上或点击卡片，即可自动显示<b>拼音</b>与<b>英文翻译</b>！点击喇叭图标可以听发音哦。</p>
+        </div>
+      </div>
+
+      <!-- Word Cards Grid -->
+      <div id="vocab-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <!-- JS dynamic insertion -->
+      </div>
+    </section>
+
+    <!-- PAGE 2: 小测试游戏 -->
+    <section id="page-2" class="hidden space-y-8">
+      
+      <!-- Sub-navigation / Progress Stepper -->
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-orange-100 flex flex-wrap justify-around gap-2 text-sm font-medium">
+        <button onclick="scrollToSection('sec-read')" class="px-4 py-2 rounded-xl hover:bg-orange-50 text-peach-600 font-bold flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-peach-100 text-peach-600 flex items-center justify-center text-xs">1</span>
+          认读测试
+        </button>
+        <button onclick="scrollToSection('sec-match')" class="px-4 py-2 rounded-xl hover:bg-orange-50 text-slate-600 hover:text-peach-600 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">2</span>
+          词意配对
+        </button>
+        <button onclick="scrollToSection('sec-sentence')" class="px-4 py-2 rounded-xl hover:bg-orange-50 text-slate-600 hover:text-peach-600 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">3</span>
+          句型填空与连词
+        </button>
+      </div>
+
+      <!-- SECTION 1: 认读测试 -->
+      <div id="sec-read" class="bg-white rounded-3xl p-6 shadow-md border border-orange-100 space-y-6">
+        <div class="flex items-center justify-between border-b border-orange-100 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-peach-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-microphone text-xl"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">第一部分：词语认读测试</h3>
+              <p class="text-xs text-slate-500">检测朗读准确度（支持语音识别）</p>
+            </div>
+          </div>
+          <!-- Mode Switcher -->
+          <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <button id="read-mode-a-btn" onclick="setReadMode('A')" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-peach-600">带拼音认读</button>
+            <button id="read-mode-b-btn" onclick="setReadMode('B')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-peach-600">无拼音认读</button>
+          </div>
+        </div>
+
+        <!-- Read Card Display -->
+        <div class="max-w-md mx-auto bg-gradient-to-b from-orange-50 to-white rounded-3xl p-8 border-2 border-orange-200 text-center shadow-inner space-y-6">
+          <div id="read-pinyin-display" class="text-peach-500 text-xl font-bold tracking-widest h-8 flex items-center justify-center">
+            qián
+          </div>
+          <div id="read-word-display" class="text-6xl font-extrabold text-slate-800 tracking-wider my-4">
+            前
+          </div>
+          <div id="read-feedback" class="text-sm font-semibold h-6 text-slate-500 flex items-center justify-center gap-2">
+            请点击下方按钮开始朗读
+          </div>
+
+          <!-- Interaction Controls -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button id="voice-btn" onclick="toggleVoiceRecognition()" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-peach-500 hover:bg-peach-600 text-white font-bold shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-microphone"></i>
+              <span id="voice-btn-text">点击语音朗读</span>
+            </button>
+            <button onclick="skipReadWord()" class="w-full sm:w-auto px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold transition-all">
+              跳过 / 下一个 <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Footer -->
+        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+          <span id="read-progress-text">进度：1 / 12</span>
+          <div class="w-1/2 bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="read-progress-bar" class="bg-peach-500 h-full w-1/12 transition-all duration-300"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: 词与意思配对 -->
+      <div id="sec-match" class="bg-white rounded-3xl p-6 shadow-md border border-orange-100 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-orange-100 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-puzzle-piece"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">第二部分：词与意思配对</h3>
+              <p class="text-xs text-slate-500">先练习熟悉，再开启 5 分钟限时挑战！</p>
+            </div>
+          </div>
+
+          <!-- Timer & Mode Header -->
+          <div class="flex items-center gap-3">
+            <div id="match-timer-box" class="hidden items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl font-mono text-sm font-bold border border-red-200 animate-pulse">
+              <i class="fa-solid fa-clock"></i>
+              <span id="match-timer-display">05:00</span>
+            </div>
+            <button id="match-mode-toggle" onclick="toggleMatchChallengeMode()" class="px-4 py-2 rounded-xl bg-orange-100 text-peach-600 text-xs font-bold hover:bg-peach-500 hover:text-white transition-all shadow-sm">
+              <i class="fa-solid fa-stopwatch mr-1"></i> 开启 5分钟限时挑战
+            </button>
+          </div>
+        </div>
+
+        <!-- Matching Board -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <!-- Chinese Words Column -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-2">中文词语</h4>
+            <div id="match-cn-list" class="space-y-2">
+              <!-- Dynamic JS -->
+            </div>
+          </div>
+
+          <!-- English Translations Column -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center mb-2">英文含义 (English)</h4>
+            <div id="match-en-list" class="space-y-2">
+              <!-- Dynamic JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Match Status / Result Bar -->
+        <div class="flex items-center justify-between text-xs text-slate-500">
+          <span id="match-score-text">配对成功：0 / 12</span>
+          <button onclick="resetMatchGame()" class="text-peach-600 hover:underline">
+            <i class="fa-solid fa-rotate-right mr-1"></i> 重置重新配对
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 3: 句子填空与连词成句 -->
+      <div id="sec-sentence" class="bg-white rounded-3xl p-6 shadow-md border border-orange-100 space-y-8">
+        <div class="border-b border-orange-100 pb-4">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">第三部分：句型应用与连词成句</h3>
+              <p class="text-xs text-slate-500">根据图二结构练习位置句型</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-SECTION 3.1: 句子填空 -->
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-orange-50 p-4 rounded-2xl border border-orange-100">
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm">阶段 1：句子填空题</h4>
+              <p class="text-xs text-slate-500">根据提示选择正确的词语填空（图二参考）</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div id="fill-timer-box" class="hidden items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl font-mono text-sm font-bold border border-red-200">
+                <i class="fa-solid fa-clock"></i>
+                <span id="fill-timer-display">05:00</span>
+              </div>
+              <button id="fill-challenge-btn" onclick="startFillChallenge()" class="px-4 py-2 rounded-xl bg-peach-500 text-white text-xs font-bold hover:bg-peach-600 transition-all shadow-md shadow-orange-100">
+                <i class="fa-solid fa-play mr-1"></i> 开启 5分钟限时填空
+              </button>
+            </div>
+          </div>
+
+          <!-- Questions Container -->
+          <div id="fill-questions-container" class="space-y-4">
+            <!-- Dynamic Questions -->
+          </div>
+
+          <div class="text-right pt-2">
+            <button onclick="checkFillAnswers()" class="px-6 py-2.5 bg-peach-500 hover:bg-peach-600 text-white font-bold rounded-xl shadow-lg shadow-orange-200 text-sm transition-all">
+              提交填空答案 <i class="fa-solid fa-check ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-SECTION 3.2: 连词成句 (Unlocked after fill completion) -->
+        <div id="unscramble-section" class="space-y-4 pt-6 border-t border-dashed border-slate-200">
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 rounded-2xl text-white flex items-center justify-between shadow-md">
+            <div>
+              <span class="bg-white/20 text-xs px-2.5 py-0.5 rounded-full mb-1 inline-block">终极挑战</span>
+              <h4 class="font-bold text-base">阶段 2：连词成句（共 5 题）</h4>
+              <p class="text-xs opacity-90">点击下方词语块按顺序排列成通顺句子（无需计时）</p>
+            </div>
+            <div class="text-2xl opacity-80">
+              <i class="fa-solid fa-puzzle-piece"></i>
+            </div>
+          </div>
+
+          <!-- Unscramble Questions Container -->
+          <div id="unscramble-container" class="space-y-6">
+            <!-- Dynamic Insertion -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Notification Toast Modal -->
+  <div id="toast-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center space-y-4 transform transition-all border border-orange-100">
+      <div id="toast-icon" class="w-16 h-16 rounded-full bg-orange-100 text-peach-500 flex items-center justify-center text-3xl mx-auto">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <h3 id="toast-title" class="text-xl font-bold text-slate-800">挑战成功！</h3>
+      <p id="toast-msg" class="text-sm text-slate-600">你太棒了！已在规定时间内完成了所有题目！</p>
+      <button onclick="closeToast()" class="w-full py-3 bg-peach-500 hover:bg-peach-600 text-white font-bold rounded-xl shadow-lg shadow-orange-200 transition-all text-sm">
+        太棒了！继续
+      </button>
+    </div>
+  </div>
+
+  <!-- Audio Sound Effects Generator using Web Audio API -->
+  <script>
+    // Audio Context Synthesizer
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'correct') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } else if (type === 'wrong') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+        osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.15); // E3
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } else if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      }
+    }
+
+    // TTS Pronunciation
+    function speakWord(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop current speech
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('您的浏览器暂不支持语音播放功能。');
+      }
+    }
+  </script>
+
+  <!-- Core JavaScript Logic -->
+  <script>
+    // DATA SOURCE: VOCABULARY FROM IMAGE 1
+    const VOCAB_DATA = [
+      { id: 1, word: '前', pinyin: 'qián', en: 'front / ahead' },
+      { id: 2, word: '面', pinyin: 'miàn', en: 'side / face / surface' },
+      { id: 3, word: '马路', pinyin: 'mǎ lù', en: 'road / street' },
+      { id: 4, word: '对面', pinyin: 'duì miàn', en: 'opposite side / across' },
+      { id: 5, word: '银行', pinyin: 'yín háng', en: 'bank' },
+      { id: 6, word: '邮局', pinyin: 'yóu jú', en: 'post office' },
+      { id: 7, word: '后', pinyin: 'hòu', en: 'back / behind' },
+      { id: 8, word: '门口', pinyin: 'mén kǒu', en: 'doorway / entrance' },
+      { id: 9, word: '超市', pinyin: 'chāo shì', en: 'supermarket' },
+      { id: 10, word: '地方', pinyin: 'dì fang', en: 'place / location' },
+      { id: 11, word: '游乐场', pinyin: 'yóu lè chǎng', en: 'playground / amusement park' },
+      { id: 12, word: '车站', pinyin: 'chē zhàn', en: 'station / bus stop' }
+    ];
+
+    // SENTENCE FILL-IN DATA BASED ON IMAGE 2
+    const FILL_QUESTIONS = [
+      { id: 1, text: '我 [BLANK1] 是 妈妈。', options: ['左边', '马路', '超市'], answer: '左边', hint: '提示：描述位置（左边/右边）' },
+      { id: 2, text: '学校 [BLANK1] 是 银行。', options: ['对面', '地方', '游乐场'], answer: '对面', hint: '提示：描述相对位置' },
+      { id: 3, text: '小华 [BLANK1] 是 小强。', options: ['右边', '车站', '邮局'], answer: '右边', hint: '提示：方位词' },
+      { id: 4, text: '马路 [BLANK1] 是 超市。', options: ['前面', '门', '人'], answer: '前面', hint: '提示：前后方位' },
+      { id: 5, text: '小华家 [BLANK1] 是 动物园。', options: ['后面', '前面', '对面'], answer: '后面', hint: '提示：后方' }
+    ];
+
+    // UNSCRAMBLE SENTENCES DATA (IMAGE 2 STRUCTURES)
+    const UNSCRAMBLE_QUESTIONS = [
+      { id: 1, tokens: ['我', '左边', '是', '妈妈。'], answer: '我左边是妈妈。' },
+      { id: 2, tokens: ['弟弟', '右边', '是', '爸爸。'], answer: '弟弟右边是爸爸。' },
+      { id: 3, tokens: ['学校', '对面', '是', '银行。'], answer: '学校对面是银行。' },
+      { id: 4, tokens: ['马路', '前面', '是', '超市。'], answer: '马路前面是超市。' },
+      { id: 5, tokens: ['小华家', '后面', '是', '动物园。'], answer: '小华家后面是动物园。' }
+    ];
+
+    // App State Variables
+    let activeTab = 1;
+    let readIndex = 0;
+    let readMode = 'A'; // 'A': With Pinyin, 'B': Without Pinyin
+    let isRecording = false;
+    let recognition = null;
+
+    // Matching State
+    let selectedCnId = null;
+    let selectedEnId = null;
+    let matchPairsMatched = 0;
+    let matchTimerInterval = null;
+    let matchTimeLeft = 300;
+    let isMatchChallenge = false;
+
+    // Sentence Fill State
+    let fillTimerInterval = null;
+    let fillTimeLeft = 300;
+    let isFillChallenge = false;
+
+    // Unscramble State
+    let unscrambleAnswers = {};
+
+    // INITIALIZATION
+    window.onload = function() {
+      renderPage1VocabCards();
+      initSpeechRecognition();
+      loadReadCard();
+      initMatchGame();
+      renderFillQuestions();
+      renderUnscrambleQuestions();
+    };
+
+    // TAB SWITCHING LOGIC
+    function switchTab(tabNum) {
+      playSound('click');
+      activeTab = tabNum;
+      const p1 = document.getElementById('page-1');
+      const p2 = document.getElementById('page-2');
+      const btn1 = document.getElementById('tab-btn-1');
+      const btn2 = document.getElementById('tab-btn-2');
+
+      if (tabNum === 1) {
+        p1.classList.remove('hidden');
+        p2.classList.add('hidden');
+        btn1.className = "flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 bg-white text-peach-600 shadow-sm";
+        btn2.className = "flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-slate-600 hover:text-peach-600";
+      } else {
+        p2.classList.remove('hidden');
+        p1.classList.add('hidden');
+        btn2.className = "flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 bg-white text-peach-600 shadow-sm";
+        btn1.className = "flex-1 sm:flex-none px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-slate-600 hover:text-peach-600";
+      }
+    }
+
+    function scrollToSection(id) {
+      playSound('click');
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- PAGE 1: VOCAB CARDS RENDER ---
+    function renderPage1VocabCards() {
+      const container = document.getElementById('vocab-grid');
+      container.innerHTML = '';
+
+      VOCAB_DATA.forEach(item => {
+        const cardHtml = `
+          <div class="card-flip h-40 w-full perspective-1000 cursor-pointer" onclick="toggleCardFlip(this); speakWord('${item.word}')">
+            <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-3d shadow-md hover:shadow-lg rounded-2xl border border-orange-100">
+              
+              <!-- Front Side -->
+              <div class="absolute inset-0 bg-white rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden">
+                <span class="text-xs text-orange-400 font-semibold mb-1">点击发音 / 悬停查看</span>
+                <span class="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-wider">${item.word}</span>
+                <button onclick="event.stopPropagation(); speakWord('${item.word}')" class="mt-3 w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 text-peach-500 flex items-center justify-center text-xs transition-all">
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+              </div>
+
+              <!-- Back Side (Hover/Flip) -->
+              <div class="absolute inset-0 bg-gradient-to-br from-peach-500 to-amber-500 text-white rounded-2xl flex flex-col items-center justify-center p-4 backface-hidden rotate-y-180 text-center">
+                <span class="text-3xl font-extrabold tracking-wider">${item.word}</span>
+                <span class="text-sm font-bold text-orange-100 tracking-widest my-1">${item.pinyin}</span>
+                <span class="text-xs font-medium text-white/90 line-clamp-2">${item.en}</span>
+              </div>
+
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHtml);
+      });
+    }
+
+    function toggleCardFlip(element) {
+      element.classList.toggle('flipped');
+    }
+
+    // --- PAGE 2 SECTION 1: READ TEST LOGIC ---
+    function setReadMode(mode) {
+      playSound('click');
+      readMode = mode;
+      const btnA = document.getElementById('read-mode-a-btn');
+      const btnB = document.getElementById('read-mode-b-btn');
+
+      if (mode === 'A') {
+        btnA.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-peach-600";
+        btnB.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-peach-600";
+      } else {
+        btnB.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-peach-600";
+        btnA.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-peach-600";
+      }
+      loadReadCard();
+    }
+
+    function loadReadCard() {
+      const item = VOCAB_DATA[readIndex];
+      const pinyinElem = document.getElementById('read-pinyin-display');
+      const wordElem = document.getElementById('read-word-display');
+      const feedbackElem = document.getElementById('read-feedback');
+      const progressText = document.getElementById('read-progress-text');
+      const progressBar = document.getElementById('read-progress-bar');
+
+      wordElem.textContent = item.word;
+      if (readMode === 'A') {
+        pinyinElem.textContent = item.pinyin;
+        pinyinElem.style.opacity = '1';
+      } else {
+        pinyinElem.textContent = '???';
+        pinyinElem.style.opacity = '0.3';
+      }
+
+      feedbackElem.innerHTML = '请点击下方按钮开始朗读';
+      feedbackElem.className = 'text-sm font-semibold h-6 text-slate-500 flex items-center justify-center gap-2';
+
+      progressText.textContent = `进度：${readIndex + 1} / ${VOCAB_DATA.length}`;
+      progressBar.style.width = `${((readIndex + 1) / VOCAB_DATA.length) * 100}%`;
+    }
+
+    function skipReadWord() {
+      playSound('click');
+      readIndex = (readIndex + 1) % VOCAB_DATA.length;
+      loadReadCard();
+    }
+
+    // Speech Recognition Setup
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'zh-CN';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isRecording = true;
+          const btn = document.getElementById('voice-btn');
+          const btnText = document.getElementById('voice-btn-text');
+          btn.classList.add('recording-active');
+          btnText.textContent = '正在倾听中...';
+          document.getElementById('read-feedback').textContent = '正在录音，请清晰念出词语...';
+        };
+
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript.trim();
+          evaluateSpeech(transcript);
+        };
+
+        recognition.onerror = function(event) {
+          stopVoiceRecording();
+          document.getElementById('read-feedback').innerHTML = '<span class="text-amber-600"><i class="fa-solid fa-triangle-exclamation"></i> 识别超时或未检测到声音，请重试</span>';
+        };
+
+        recognition.onend = function() {
+          stopVoiceRecording();
+        };
+      } else {
+        document.getElementById('voice-btn').disabled = true;
+        document.getElementById('voice-btn-text').textContent = '浏览器不支持语音识别';
+      }
+    }
+
+    function toggleVoiceRecognition() {
+      if (!recognition) {
+        alert('您的浏览器暂不支持 Web Speech 语音识别API（建议使用 Google Chrome）。可以使用“跳过”进行练习。');
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+
+    function stopVoiceRecording() {
+      isRecording = false;
+      const btn = document.getElementById('voice-btn');
+      const btnText = document.getElementById('voice-btn-text');
+      btn.classList.remove('recording-active');
+      btnText.textContent = '点击语音朗读';
+    }
+
+    function evaluateSpeech(spokenText) {
+      const currentWord = VOCAB_DATA[readIndex].word;
+      const feedbackElem = document.getElementById('read-feedback');
+
+      if (spokenText.includes(currentWord) || currentWord.includes(spokenText)) {
+        playSound('correct');
+        feedbackElem.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 太棒了！识别为：“${spokenText}”，读音正确！</span>`;
+        setTimeout(() => {
+          skipReadWord();
+        }, 1500);
+      } else {
+        playSound('wrong');
+        feedbackElem.innerHTML = `<span class="text-red-500 font-bold"><i class="fa-solid fa-circle-xmark"></i> 听到的是：“${spokenText}”，再试一次吧！</span>`;
+      }
+    }
+
+
+    // --- PAGE 2 SECTION 2: WORD MATCHING LOGIC ---
+    function initMatchGame() {
+      selectedCnId = null;
+      selectedEnId = null;
+      matchPairsMatched = 0;
+      document.getElementById('match-score-text').textContent = `配对成功：0 / ${VOCAB_DATA.length}`;
+
+      // Shuffle lists independently
+      const cnShuffled = [...VOCAB_DATA].sort(() => Math.random() - 0.5);
+      const enShuffled = [...VOCAB_DATA].sort(() => Math.random() - 0.5);
+
+      const cnContainer = document.getElementById('match-cn-list');
+      const enContainer = document.getElementById('match-en-list');
+
+      cnContainer.innerHTML = '';
+      enContainer.innerHTML = '';
+
+      cnShuffled.forEach(item => {
+        const btn = document.createElement('button');
+        btn.id = `match-cn-${item.id}`;
+        btn.className = "w-full p-3 rounded-xl border border-slate-200 bg-white hover:border-orange-300 font-bold text-slate-700 transition-all text-left flex items-center justify-between shadow-sm";
+        btn.innerHTML = `<span>${item.word}</span> <i class="fa-regular fa-circle text-xs text-slate-300"></i>`;
+        btn.onclick = () => selectCnMatch(item.id);
+        cnContainer.appendChild(btn);
+      });
+
+      enShuffled.forEach(item => {
+        const btn = document.createElement('button');
+        btn.id = `match-en-${item.id}`;
+        btn.className = "w-full p-3 rounded-xl border border-slate-200 bg-white hover:border-orange-300 font-medium text-slate-600 text-sm transition-all text-left flex items-center justify-between shadow-sm";
+        btn.innerHTML = `<span>${item.en}</span> <i class="fa-regular fa-circle text-xs text-slate-300"></i>`;
+        btn.onclick = () => selectEnMatch(item.id);
+        enContainer.appendChild(btn);
+      });
+    }
+
+    function selectCnMatch(id) {
+      playSound('click');
+      if (selectedCnId) {
+        const prev = document.getElementById(`match-cn-${selectedCnId}`);
+        if (prev && !prev.disabled) prev.className = prev.className.replace('border-peach-500 bg-orange-50 text-peach-600', 'border-slate-200 bg-white text-slate-700');
+      }
+      selectedCnId = id;
+      const curr = document.getElementById(`match-cn-${id}`);
+      curr.className = curr.className.replace('border-slate-200 bg-white text-slate-700', 'border-peach-500 bg-orange-50 text-peach-600');
+
+      checkMatchPair();
+    }
+
+    function selectEnMatch(id) {
+      playSound('click');
+      if (selectedEnId) {
+        const prev = document.getElementById(`match-en-${selectedEnId}`);
+        if (prev && !prev.disabled) prev.className = prev.className.replace('border-peach-500 bg-orange-50 text-peach-600', 'border-slate-200 bg-white text-slate-600');
+      }
+      selectedEnId = id;
+      const curr = document.getElementById(`match-en-${id}`);
+      curr.className = curr.className.replace('border-slate-200 bg-white text-slate-600', 'border-peach-500 bg-orange-50 text-peach-600');
+
+      checkMatchPair();
+    }
+
+    function checkMatchPair() {
+      if (selectedCnId && selectedEnId) {
+        const cnBtn = document.getElementById(`match-cn-${selectedCnId}`);
+        const enBtn = document.getElementById(`match-en-${selectedEnId}`);
+
+        if (selectedCnId === selectedEnId) {
+          // CORRECT MATCH
+          playSound('correct');
+          cnBtn.className = "w-full p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-bold transition-all text-left flex items-center justify-between shadow-sm cursor-default";
+          enBtn.className = "w-full p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-medium text-sm transition-all text-left flex items-center justify-between shadow-sm cursor-default";
+
+          cnBtn.querySelector('i').className = "fa-solid fa-circle-check text-emerald-500";
+          enBtn.querySelector('i').className = "fa-solid fa-circle-check text-emerald-500";
+
+          cnBtn.disabled = true;
+          enBtn.disabled = true;
+
+          matchPairsMatched++;
+          document.getElementById('match-score-text').textContent = `配对成功：${matchPairsMatched} / ${VOCAB_DATA.length}`;
+
+          selectedCnId = null;
+          selectedEnId = null;
+
+          if (matchPairsMatched === VOCAB_DATA.length) {
+            clearInterval(matchTimerInterval);
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            showToast('词意配对全部完成！', isMatchChallenge ? '太厉害了！你在5分钟内配对成功所有词语！' : '练习完成，赶快挑战5分钟限时模式吧！');
+          }
+        } else {
+          // WRONG MATCH
+          playSound('wrong');
+          cnBtn.classList.add('border-red-400', 'bg-red-50');
+          enBtn.classList.add('border-red-400', 'bg-red-50');
+
+          setTimeout(() => {
+            if (!cnBtn.disabled) {
+              cnBtn.className = "w-full p-3 rounded-xl border border-slate-200 bg-white hover:border-orange-300 font-bold text-slate-700 transition-all text-left flex items-center justify-between shadow-sm";
+            }
+            if (!enBtn.disabled) {
+              enBtn.className = "w-full p-3 rounded-xl border border-slate-200 bg-white hover:border-orange-300 font-medium text-slate-600 text-sm transition-all text-left flex items-center justify-between shadow-sm";
+            }
+            selectedCnId = null;
+            selectedEnId = null;
+          }, 600);
+        }
+      }
+    }
+
+    function resetMatchGame() {
+      playSound('click');
+      clearInterval(matchTimerInterval);
+      document.getElementById('match-timer-box').classList.add('hidden');
+      document.getElementById('match-mode-toggle').innerHTML = `<i class="fa-solid fa-stopwatch mr-1"></i> 开启 5分钟限时挑战`;
+      isMatchChallenge = false;
+      initMatchGame();
+    }
+
+    function toggleMatchChallengeMode() {
+      playSound('click');
+      if (isMatchChallenge) {
+        resetMatchGame();
+      } else {
+        isMatchChallenge = true;
+        initMatchGame();
+        document.getElementById('match-timer-box').classList.remove('hidden');
+        document.getElementById('match-timer-box').classList.add('flex');
+        document.getElementById('match-mode-toggle').innerHTML = `<i class="fa-solid fa-rotate-left mr-1"></i> 退出限时模式`;
+
+        matchTimeLeft = 300;
+        updateMatchTimerDisplay();
+        matchTimerInterval = setInterval(() => {
+          matchTimeLeft--;
+          updateMatchTimerDisplay();
+          if (matchTimeLeft <= 0) {
+            clearInterval(matchTimerInterval);
+            playSound('wrong');
+            alert('时间到啦！未能在5分钟内完成，再接再厉哦！');
+            resetMatchGame();
+          }
+        }, 1000);
+      }
+    }
+
+    function updateMatchTimerDisplay() {
+      const mins = Math.floor(matchTimeLeft / 60).toString().padStart(2, '0');
+      const secs = (matchTimeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('match-timer-display').textContent = `${mins}:${secs}`;
+    }
+
+
+    // --- PAGE 2 SECTION 3: SENTENCE FILL & UNSCRAMBLE LOGIC ---
+    function renderFillQuestions() {
+      const container = document.getElementById('fill-questions-container');
+      container.innerHTML = '';
+
+      FILL_QUESTIONS.forEach((q, idx) => {
+        const parts = q.text.split('[BLANK1]');
+        const cardHtml = `
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-bold">
+              <span>第 ${idx + 1} 题</span>
+              <span>${q.hint}</span>
+            </div>
+            <div class="text-base sm:text-lg font-extrabold text-slate-800 flex flex-wrap items-center gap-2">
+              <span>${parts[0]}</span>
+              <select id="fill-select-${q.id}" class="bg-white border-2 border-peach-400 rounded-xl px-3 py-1 text-peach-600 font-bold focus:outline-none focus:ring-2 focus:ring-peach-500">
+                <option value="">-- 请选择 --</option>
+                ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+              </select>
+              <span>${parts[1]}</span>
+            </div>
+            <div id="fill-feedback-${q.id}" class="text-xs font-bold hidden"></div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHtml);
+      });
+    }
+
+    function checkFillAnswers() {
+      playSound('click');
+      let allCorrect = true;
+
+      FILL_QUESTIONS.forEach(q => {
+        const select = document.getElementById(`fill-select-${q.id}`);
+        const feedback = document.getElementById(`fill-feedback-${q.id}`);
+        const userVal = select.value;
+
+        feedback.classList.remove('hidden', 'text-emerald-600', 'text-red-500');
+
+        if (userVal === q.answer) {
+          feedback.classList.add('text-emerald-600');
+          feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> 回答正确！`;
+        } else {
+          allCorrect = false;
+          feedback.classList.add('text-red-500');
+          feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> 错误，正确答案是：“${q.answer}”`;
+        }
+      });
+
+      if (allCorrect) {
+        playSound('correct');
+        clearInterval(fillTimerInterval);
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+        showToast('句子填空全部正确！', '太棒了！已顺利通过句子填空关卡！已解锁连词成句题！');
+      } else {
+        playSound('wrong');
+      }
+    }
+
+    function startFillChallenge() {
+      playSound('click');
+      if (isFillChallenge) {
+        clearInterval(fillTimerInterval);
+        isFillChallenge = false;
+        document.getElementById('fill-timer-box').classList.add('hidden');
+        document.getElementById('fill-challenge-btn').innerHTML = `<i class="fa-solid fa-play mr-1"></i> 开启 5分钟限时填空`;
+        renderFillQuestions();
+      } else {
+        isFillChallenge = true;
+        renderFillQuestions();
+        document.getElementById('fill-timer-box').classList.remove('hidden');
+        document.getElementById('fill-timer-box').classList.add('flex');
+        document.getElementById('fill-challenge-btn').innerHTML = `<i class="fa-solid fa-rotate-left mr-1"></i> 重置限时填空`;
+
+        fillTimeLeft = 300;
+        updateFillTimerDisplay();
+        fillTimerInterval = setInterval(() => {
+          fillTimeLeft--;
+          updateFillTimerDisplay();
+          if (fillTimeLeft <= 0) {
+            clearInterval(fillTimerInterval);
+            playSound('wrong');
+            alert('时间到啦！未能在5分钟内完成填空挑战，再试一次吧！');
+            startFillChallenge();
+          }
+        }, 1000);
+      }
+    }
+
+    function updateFillTimerDisplay() {
+      const mins = Math.floor(fillTimeLeft / 60).toString().padStart(2, '0');
+      const secs = (fillTimeLeft % 60).toString().padStart(2, '0');
+      document.getElementById('fill-timer-display').textContent = `${mins}:${secs}`;
+    }
+
+    // UNSCRAMBLE LOGIC
+    function renderUnscrambleQuestions() {
+      const container = document.getElementById('unscramble-container');
+      container.innerHTML = '';
+
+      UNSCRAMBLE_QUESTIONS.forEach((q, idx) => {
+        unscrambleAnswers[q.id] = [];
+        // Shuffle tokens
+        const shuffledTokens = [...q.tokens].sort(() => Math.random() - 0.5);
+
+        const cardHtml = `
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+              <span>连词成句 第 ${idx + 1} 题</span>
+              <button onclick="resetUnscramble(${q.id})" class="text-peach-600 hover:underline">
+                <i class="fa-solid fa-rotate-right"></i> 重置本题
+              </button>
+            </div>
+
+            <!-- Target Assembly Area -->
+            <div id="unscramble-target-${q.id}" class="min-h-[56px] p-2 bg-white rounded-xl border-2 border-dashed border-peach-300 flex flex-wrap items-center gap-2">
+              <span class="text-slate-300 text-xs italic pl-2">点击下方词语加入句子...</span>
+            </div>
+
+            <!-- Source Pool Area -->
+            <div id="unscramble-source-${q.id}" class="flex flex-wrap items-center gap-2 pt-2">
+              ${shuffledTokens.map((tok, tIdx) => `
+                <button id="token-${q.id}-${tIdx}" onclick="clickToken(${q.id}, '${tok}', 'token-${q.id}-${tIdx}')" class="px-4 py-2 bg-white hover:bg-orange-50 border-2 border-orange-200 text-slate-800 font-extrabold rounded-xl shadow-sm text-base transition-all">
+                  ${tok}
+                </button>
+              `).join('')}
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <div id="unscramble-feedback-${q.id}" class="text-xs font-bold"></div>
+              <button onclick="checkUnscrambleSingle(${q.id})" class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-xs shadow-md shadow-emerald-100 transition-all">
+                验证句子
+              </button>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHtml);
+      });
+    }
+
+    function clickToken(qId, tokenText, btnId) {
+      playSound('click');
+      const targetArea = document.getElementById(`unscramble-target-${qId}`);
+      const btn = document.getElementById(btnId);
+
+      // Remove placeholder instruction text
+      const placeholder = targetArea.querySelector('.italic');
+      if (placeholder) placeholder.remove();
+
+      // Add to answer state
+      unscrambleAnswers[qId].push({ text: tokenText, btnId: btnId });
+
+      // Move UI element visual state
+      btn.disabled = true;
+      btn.classList.add('opacity-30', 'scale-95');
+
+      // Create block in target
+      const block = document.createElement('span');
+      block.id = `target-block-${btnId}`;
+      block.className = "px-3 py-1.5 bg-peach-500 text-white font-extrabold rounded-lg text-base shadow-sm animate-bounce-short cursor-pointer flex items-center gap-1";
+      block.innerHTML = `${tokenText} <i class="fa-solid fa-xmark text-xs opacity-70"></i>`;
+      block.onclick = () => removeToken(qId, tokenText, btnId);
+
+      targetArea.appendChild(block);
+    }
+
+    function removeToken(qId, tokenText, btnId) {
+      playSound('click');
+      unscrambleAnswers[qId] = unscrambleAnswers[qId].filter(item => item.btnId !== btnId);
+
+      const targetBlock = document.getElementById(`target-block-${btnId}`);
+      if (targetBlock) targetBlock.remove();
+
+      const origBtn = document.getElementById(btnId);
+      if (origBtn) {
+        origBtn.disabled = false;
+        origBtn.classList.remove('opacity-30', 'scale-95');
+      }
+
+      const targetArea = document.getElementById(`unscramble-target-${qId}`);
+      if (targetArea.children.length === 0) {
+        targetArea.innerHTML = '<span class="text-slate-300 text-xs italic pl-2">点击下方词语加入句子...</span>';
+      }
+    }
+
+    function resetUnscramble(qId) {
+      playSound('click');
+      const q = UNSCRAMBLE_QUESTIONS.find(item => item.id === qId);
+      if (!q) return;
+
+      unscrambleAnswers[qId] = [];
+      const targetArea = document.getElementById(`unscramble-target-${qId}`);
+      targetArea.innerHTML = '<span class="text-slate-300 text-xs italic pl-2">点击下方词语加入句子...</span>';
+
+      const sourceArea = document.getElementById(`unscramble-source-${qId}`);
+      const buttons = sourceArea.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-30', 'scale-95');
+      });
+
+      const feedback = document.getElementById(`unscramble-feedback-${qId}`);
+      feedback.textContent = '';
+    }
+
+    function checkUnscrambleSingle(qId) {
+      const q = UNSCRAMBLE_QUESTIONS.find(item => item.id === qId);
+      const userBuilt = unscrambleAnswers[qId].map(i => i.text).join('');
+      const feedback = document.getElementById(`unscramble-feedback-${qId}`);
+
+      if (userBuilt === q.answer) {
+        playSound('correct');
+        feedback.className = "text-xs font-bold text-emerald-600";
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> 太棒了，句子完全正确！`;
+      } else {
+        playSound('wrong');
+        feedback.className = "text-xs font-bold text-red-500";
+        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> 顺序不对哦，再试一次！`;
+      }
+    }
+
+    // MODAL TOAST NOTIFICATION
+    function showToast(title, msg) {
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-modal').classList.remove('hidden');
+    }
+
+    function closeToast() {
+      playSound('click');
+      document.getElementById('toast-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
