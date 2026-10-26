@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSK 1 汉语闯关大冒险 - 空间与方位篇</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .game-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .stat-item span {
+            color: var(--accent);
+        }
+
+        .stage-container {
+            padding: 30px;
+        }
+
+        .stage-title {
+            font-size: 1.4rem;
+            color: #818cf8;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .q-header {
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            background: #1e293b;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* 连词成句的汉字积木区域样式 */
+        .scramble-area {
+            background: #111827;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            min-height: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            border: 1px dashed #4b5563;
+        }
+
+        .word-chip {
+            background: #3b82f6;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            user-select: none;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .word-chip:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .user-answer-box {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #475569;
+            min-height: 25px;
+            color: var(--accent);
+            font-weight: bold;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-footer {
+            text-align: center;
+            padding: 20px 30px 40px 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        #result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        #result-screen h2 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .feedback-tag {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: block;
+        }
+        .correct-text { color: var(--success); font-weight: bold; }
+        .wrong-text { color: var(--danger); font-weight: bold; }
+        
+        .clear-btn {
+            background: #64748b;
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        .clear-btn:hover { background: #475569; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="game-header">
+        <h1>⚔️ HSK 1 汉语词汇与句型大闯关</h1>
+        <p>挑战你的词义翻译与句子重组能力！</p>
+        <div class="stats-bar">
+            <div class="stat-item">⭐ 当前得分: <span id="score">0</span> / 15</div>
+            <div class="stat-item">⏳ 计时: <span id="timer">00:00</span></div>
+        </div>
+    </div>
+
+    <div class="stage-container" id="game-form">
+        
+        <!-- 第一部分：词语翻译 -->
+        <div class="stage-title">🚩 第一关：词语与短语翻译 (请在输入框中写出对应的汉字)</div>
+        
+        <div class="question-box" data-type="translate" data-q="1" data-ans="前边">
+            <div class="q-header"><strong>第 1 题：</strong>front = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="2" data-ans="学校前边">
+            <div class="q-header"><strong>第 2 题：</strong>in front of school = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="3" data-ans="在学校">
+            <div class="q-header"><strong>第 3 题：</strong>at school = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="4" data-ans="学习">
+            <div class="q-header"><strong>第 4 题：</strong>Study = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="5" data-ans="有">
+            <div class="q-header"><strong>第 5 题：</strong>there is / are = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="6" data-ans="家">
+            <div class="q-header"><strong>第 6 题：</strong>measure word for Commercial area = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="7" data-ans="电影">
+            <div class="q-header"><strong>第 7 题：</strong>movie = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-q="8" data-ans="电影院">
+            <div class="q-header"><strong>第 8 题：</strong>cinema = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="9" data-ans="一家电影院">
+            <div class="q-header"><strong>第 9 题：</strong>one cinema = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <div class="question-box" data-type="translate" data-q="10" data-ans="一家超市">
+            <div class="q-header"><strong>第 10 题：</strong>one supermarket = ?</div>
+            <input type="text" class="text-input" placeholder="请输入汉字..." autocomplete="off">
+        </div>
+
+        <!-- 第二部分：连词成句（积木点击重组） -->
+        <div class="stage-title">🚩 第二关：句型重组大挑战 (点击词语方块组合成正确的句子)</div>
+
+        <div class="question-box" data-type="scramble" data-q="11" data-ans="学校前边有一家电影院。">
+            <div class="q-header"><strong>第 11 题：</strong>连词成句</div>
+            <div class="scramble-area" data-words="电影院,学校,前边,有,一,家,。"></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">你的组合结果：</div>
+            <div class="user-answer-box"><span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button></div>
+        </div>
+
+        <div class="question-box" data-type="scramble" data-q="12" data-ans="我家前边有一棵树。">
+            <div class="q-header"><strong>第 12 题：</strong>连词成句</div>
+            <div class="scramble-area" data-words="棵,树,我,家,前边,有,一,。"></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">你的组合结果：</div>
+            <div class="user-answer-box"><span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button></div>
+        </div>
+
+        <div class="question-box" data-type="scramble" data-q="13" data-ans="电影院前边是一家超市。">
+            <div class="q-header"><strong>第 13 题：</strong>连词成句</div>
+            <div class="scramble-area" data-words="是,超市,电影院,前边,一,家,。"></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">你的组合结果：</div>
+            <div class="user-answer-box"><span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button></div>
+        </div>
+
+        <div class="question-box" data-type="scramble" data-q="14" data-ans="电影院前边不是超市。">
+            <div class="q-header"><strong>第 14 题：</strong>连词成句</div>
+            <div class="scramble-area" data-words="前边,电影院,不是,超市,。"></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">你的组合结果：</div>
+            <div class="user-answer-box"><span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button></div>
+        </div>
+
+        <div class="question-box" data-type="scramble" data-q="15" data-ans="桌子上没有小猫。">
+            <div class="q-header"><strong>第 15 题：</strong>连词成句</div>
+            <div class="scramble-area" data-words="上,桌子,小猫,没有,。"></div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">你的组合结果：</div>
+            <div class="user-answer-box"><span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button></div>
+        </div>
+
+        <div class="action-footer">
+            <button class="btn-primary" onclick="submitGame()">🚀 提交闯关试卷！</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h2>🎉 恭喜通关！</h2>
+        <p id="final-score" style="font-size: 1.5rem;"></p>
+        <p id="final-time"></p>
+        <button class="btn-primary" onclick="location.reload()">再玩一次</button>
+    </div>
+</div>
+
+<script>
+    // 初始化第二关的乱序词语积木
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.scramble-area').forEach(area => {
+            let wordsStr = area.getAttribute('data-words');
+            let words = wordsStr.split(',');
+            // 简单随机打乱
+            words.sort(() => Math.random() - 0.5);
+            
+            area.innerHTML = '';
+            words.forEach(word => {
+                let chip = document.createElement('div');
+                chip.className = 'word-chip';
+                chip.innerText = word;
+                chip.onclick = () => selectWord(chip);
+                area.appendChild(chip);
+            });
+        });
+    });
+
+    // 点击词语积木上屏
+    function selectWord(chip) {
+        let box = chip.closest('.question-box').querySelector('.user-answer-box');
+        let placeholder = box.querySelector('span');
+        if (placeholder) placeholder.remove();
+
+        // 克隆并加入结果框
+        let clone = chip.cloneNode(true);
+        clone.onclick = () => {
+            // 点击已选的可以退回原位
+            chip.style.display = 'inline-block';
+            clone.remove();
+            if (box.querySelectorAll('.word-chip').length === 0) {
+                box.innerHTML = '<span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button>';
+            }
+        };
+        box.insertBefore(clone, box.querySelector('.clear-btn'));
+        chip.style.display = 'none'; // 隐藏原位
+    }
+
+    // 重置句子
+    function clearSentence(btn) {
+        let box = btn.closest('.user-answer-box');
+        let qBox = btn.closest('.question-box');
+        box.querySelectorAll('.word-chip').forEach(c => c.remove());
+        box.innerHTML = '<span>请点击上方词语组装</span><button class="clear-btn" onclick="clearSentence(this)">重置</button>';
+        qBox.querySelectorAll('.scramble-area .word-chip').forEach(c => c.style.display = 'inline-block');
+    }
+
+    // 计时器
+    let seconds = 0;
+    const timerEl = document.getElementById("timer");
+    const timerInterval = setInterval(() => {
+        seconds++;
+        let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        let s = (seconds % 60).toString().padStart(2, '0');
+        timerEl.innerText = `${m}:${s}`;
+    }, 1000);
+
+    // 提交比对
+    function submitGame() {
+        const boxes = document.querySelectorAll('.question-box');
+        let score = 0;
+
+        boxes.forEach(box => {
+            let type = box.getAttribute('data-type');
+            let correctAns = box.getAttribute('data-ans').trim();
+            let oldTag = box.querySelector('.feedback-tag');
+            if(oldTag) oldTag.remove();
+
+            let tag = document.createElement('span');
+            tag.className = 'feedback-tag';
+            let isCorrect = false;
+
+            if (type === 'translate') {
+                let inputVal = box.querySelector('text-input, .text-input').value.trim();
+                // 忽略全角半角标点或空格差异
+                if (inputVal === correctAns) {
+                    isCorrect = true;
+                }
+            } else if (type === 'scramble') {
+                let chips = box.querySelectorAll('.user-answer-box .word-chip');
+                let userSentence = Array.from(chips).map(c => c.innerText).join('');
+                if (userSentence === correctAns) {
+                    isCorrect = true;
+                }
+            }
+
+            if (isCorrect) {
+                score++;
+                tag.innerHTML = `<span class="correct-text">✔️ 回答正确！</span>`;
+            } else {
+                tag.innerHTML = `<span class="wrong-text">❌ 回答错误。正确答案是：${correctAns}</span>`;
+            }
+            box.appendChild(tag);
+        });
+
+        clearInterval(timerInterval);
+        document.getElementById('game-form').style.display = 'none';
+        const resScreen = document.getElementById('result-screen');
+        resScreen.style.display = 'block';
+
+        document.getElementById('final-score').innerText = `最终得分：${score} / 15 分`;
+        document.getElementById('final-time').innerText = `总用时: ${timerEl.innerText}`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
